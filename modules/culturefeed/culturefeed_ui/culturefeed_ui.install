@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * Implements hook_uninstall().
+ */
+function culturefeed_ui_uninstall() {
+  $variables = array(
+    'culturefeed_ui_block_most_active_user_sort',
+    'culturefeed_ui_similar_users_block_cache_expires',
+  );
+
+  foreach ($variables as $variable) {
+    variable_del($variable);
+  }
+}
+
+/**
+ * Update the block cache setting for something_for_you to DRUPAL_CACHE_PER_PAGE.
+ */
+function culturefeed_ui_update_7001() {
+  db_update('block')->fields(array('cache' => DRUPAL_CACHE_PER_PAGE))->condition('delta', 'something_for_you')->execute();
+}

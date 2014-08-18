@@ -1,0 +1,3 @@
+#Exclude files and config
+sites/default/files/*
+sites/default/settings.php
