@@ -1,0 +1,310 @@
+# $Id$
+#
+# Dutch translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  culturefeed_search_ui.module: n/a
+#  culturefeed_search_ui.info: n/a
+#  includes/admin.inc: n/a
+#  includes/blocks.inc: n/a
+#  includes/helpers.inc: n/a
+#  includes/pages.inc: n/a
+#  js/search_ui.js: n/a
+#  lib/Drupal/CultureFeedSearchPage.php: n/a
+#  theme/culturefeed-search-list.tpl.php: n/a
+#  theme/culturefeed-search-facet-item.tpl.php: n/a
+#  theme/culturefeed-search-page.tpl.php: n/a
+#  theme/culturefeed-search-suggestions.tpl.php: n/a
+#  theme/theme.inc: n/a
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2013-12-23 15:51+0100\n"
+"PO-Revision-Date: 2013-12-23 15:54+0100\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Dutch <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+"Language: nl\n"
+"X-Generator: Poedit 1.6.3\n"
+
+#: culturefeed_search_ui.module:99
+msgid "Change CultureFeed Search UI settings like display, filters, …"
+msgstr ""
+"Verander de instellingen van de CultureFeed Search UI zoals weergave, "
+"filters,..."
+
+#: culturefeed_search_ui.module:235
+msgid "Culturefeed search: search events and pages"
+msgstr "Culturefeed search: zoek activiteiten en pagina's"
+
+#: culturefeed_search_ui.module:240
+msgid "Culturefeed search: sort order"
+msgstr "Culturefeed search: zoekresultaten sorteren"
+
+#: culturefeed_search_ui.module:245
+msgid "Culturefeed search: active filters"
+msgstr "Culturefeed search: actieve filters"
+
+#: culturefeed_search_ui.module:250
+msgid "Culturefeed search: facet when"
+msgstr "Culturefeed search: facet wanneer"
+
+#: culturefeed_search_ui.module:255
+msgid "Culturefeed search: facet where"
+msgstr "Culturefeed search: facet waar"
+
+#: culturefeed_search_ui.module:260
+msgid "Culturefeed search: facet where - search only on cities and zipcodes"
+msgstr ""
+
+#: culturefeed_search_ui.module:268
+msgid "Culturefeed search: facet @label"
+msgstr ""
+
+#: culturefeed_search_ui.module:303
+msgid "You searched for:"
+msgstr "Je zocht op:"
+
+#: culturefeed_search_ui.module:418
+msgid "Near"
+msgstr "In de buurt van"
+
+#: culturefeed_search_ui.module:61
+msgid "Culturefeed search"
+msgstr ""
+
+#: culturefeed_search_ui.module:98 culturefeed_search_ui.info:0
+msgid "CultureFeed Search UI"
+msgstr ""
+
+#: culturefeed_search_ui.info:0
+msgid ""
+"CultureFeed Search UI is the basic framework needed to view search pages "
+"from items. For example agenda/search page from the agenda module."
+msgstr ""
+"CultureFeed Search UI is het basis framework om zoekresultatenpagina's en "
+"detailpagina's te raadplegen."
+
+#: culturefeed_search_ui.info:0
+msgid "CultureFeed"
+msgstr "CultureFeed"
+
+#: includes/admin.inc:15
+msgid "Number of items per page"
+msgstr "Aantal resultaten per pagina"
+
+#: includes/admin.inc:21
+msgid "Pager type for the search page(s)"
+msgstr "Type navigatie op zoekresultatenpagina's"
+
+#: includes/admin.inc:22
+msgid ""
+"The type of pager to use on search pages. This will trigger different "
+"templates as well."
+msgstr ""
+"Type navigatie op zoekresultatenpagina's (paginering / 'infinite scroll'). "
+"Voor elk type navigatie wordt een ander sjabloon gebruikt."
+
+#: includes/admin.inc:24
+msgid "Normal pager with page numbers"
+msgstr "Paginering met paginanummering en vorige / volgende opties."
+
+#: includes/admin.inc:25
+msgid "Pager with button to manually scroll to infinity"
+msgstr ""
+"Paginering die je toelaat om onbeperkt zoekresultaten in te laden ('infinite "
+"scroll')."
+
+#: includes/admin.inc:32
+msgid "Redirect old cnapi urls to the new system"
+msgstr "Leid oude (CNAPI) URL's om naar de nieuwe (SAPI) URL's."
+
+#: includes/admin.inc:33
+msgid ""
+"If enabled, all urls that where used by the cnapi module, will be redirected "
+"to urls for the new search api."
+msgstr ""
+"Wanneer ingeschakeld zullen alle oude URL's (CNAPI), omgeleid worden naar "
+"nieuwe URL's (SAPI)."
+
+#: includes/admin.inc:39
+msgid "Group"
+msgstr "Groep"
+
+#: includes/admin.inc:40
+msgid ""
+"The data is now fully denormalized so that 1 document = 1 time-based event. "
+"So you get the same event multiple times per opening day or hour. To group "
+"the results per event, the group = event parameter can be used. To group "
+"multiple events per production you can use group=event_production."
+msgstr ""
+
+#: includes/blocks.inc:29
+msgid "Search in"
+msgstr "Zoek in"
+
+#: includes/blocks.inc:36
+msgid "Search terms"
+msgstr "Trefwoorden"
+
+#: includes/blocks.inc:43
+msgid "Search"
+msgstr "Zoeken"
+
+#: includes/blocks.inc:106
+msgid "Sort"
+msgstr "Sorteer resultaten op"
+
+#: includes/blocks.inc:114
+msgid "Submit"
+msgstr "Voeg toe"
+
+#: includes/blocks.inc:222
+msgid "When"
+msgstr "Wanneer"
+
+#: includes/blocks.inc:240
+msgid "Choose a date"
+msgstr "Datum"
+
+#: includes/blocks.inc:243
+msgid "Or choose a custom date"
+msgstr "Of kies zelf een datum"
+
+#: includes/blocks.inc:248;382;430;524
+msgid "Ok"
+msgstr "Ok"
+
+#: includes/blocks.inc:265
+msgid "till"
+msgstr "tot"
+
+#: includes/blocks.inc:269;274
+msgid "Please enter a valid date"
+msgstr "Gelieve een geldige datum in te voeren"
+
+#: includes/blocks.inc:357;374;499;516
+msgid "Where"
+msgstr "Waar"
+
+#: includes/blocks.inc:377;519
+msgid "Zipcode or city"
+msgstr "Postcode of gemeente"
+
+#: includes/blocks.inc:433
+msgid "Change radius"
+msgstr "Wijzig straal"
+
+#: includes/blocks.inc:436
+msgid "Choose another location"
+msgstr "Kies andere plaats"
+
+#: includes/blocks.inc:423
+msgid "Search nearby"
+msgstr "Zoek in de buurt"
+
+#: includes/blocks.inc:563
+msgid "Remove all filters"
+msgstr "Alle filters verwijderen"
+
+#: includes/helpers.inc:89
+msgid "Today"
+msgstr "Vandaag"
+
+#: includes/helpers.inc:90
+msgid "Next 7 days"
+msgstr "Volgende 7 dagen"
+
+#: includes/helpers.inc:91
+msgid "This weekend"
+msgstr "Dit weekend"
+
+#: includes/helpers.inc:92
+msgid "Next weekend"
+msgstr "Volgend weekend"
+
+#: includes/helpers.inc:93
+msgid "Next 14 days"
+msgstr "Volgende 14 dagen"
+
+#: includes/helpers.inc:94
+msgid "Next 30 days"
+msgstr "Volgende 30 dagen"
+
+#: includes/helpers.inc:95
+msgid "Next 12 months"
+msgstr "Volgende 12 maanden"
+
+#: includes/pages.inc:69;73;77;84
+msgid "There was an error while loading the search results."
+msgstr "Er is een fout opgetreden bij het laden van de zoekresultaten."
+
+#: js/search_ui.js:0
+msgid "Specific date"
+msgstr "Specifieke datum"
+
+#: js/search_ui.js:0
+msgid "Period from/to"
+msgstr "van / tot"
+
+#: js/search_ui.js:0
+msgid "Start date"
+msgstr "Begindatum"
+
+#: js/search_ui.js:0
+msgid "End date"
+msgstr "Einddatum"
+
+#: js/search_ui.js:0
+msgid "OK"
+msgstr "Ok"
+
+#: lib/Drupal/CultureFeedSearchPage.php:603
+msgid "More results"
+msgstr "Meer resultaten"
+
+#: lib/Drupal/CultureFeedSearchPage.php:614
+#: theme/culturefeed-search-list.tpl.php:14
+msgid "perform a new search."
+msgstr "voer een nieuwe zoekopdracht uit."
+
+#: lib/Drupal/CultureFeedSearchPage.php:616
+#: theme/culturefeed-search-list.tpl.php:19
+msgid "There are no more search results."
+msgstr "Er zijn geen zoekresultaten meer."
+
+#: lib/Drupal/CultureFeedSearchPage.php:617
+#: theme/culturefeed-search-list.tpl.php:19
+msgid "Refine your search results or"
+msgstr "Verfijn jouw zoekopdracht of"
+
+#: lib/Drupal/CultureFeedSearchPage.php:680
+msgid "page"
+msgstr "pagina"
+
+#: theme/culturefeed-search-facet-item.tpl.php:15
+msgid "Remove filter"
+msgstr "Verwijder filter"
+
+#: theme/culturefeed-search-page.tpl.php:11
+msgid "<strong>@count</strong> result found"
+msgid_plural "<strong>@count</strong> results found"
+msgstr[0] "<strong>@count</strong> resultaat gevonden"
+msgstr[1] "<strong>@count</strong> resultaten gevonden"
+
+#: theme/culturefeed-search-suggestions.tpl.php:8
+msgid "Did you mean"
+msgstr "Bedoelde je:"
+
+#: theme/theme.inc:186
+msgid "@range from @count result"
+msgid_plural "@range from @count results"
+msgstr[0] "@range van @count resultaat"
+msgstr[1] "@range van @count resultaten"
+
+msgid "Show the facet only when an eventtype is chosen"
+msgstr "Toon de facet enkel wanneer een eventtype is gekozen"

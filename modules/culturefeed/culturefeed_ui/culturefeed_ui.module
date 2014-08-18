@@ -1,0 +1,490 @@
+<?php
+
+require_once('culturefeed_ui.helpers.inc');
+require_once('culturefeed_ui.preprocess.inc');
+require_once('culturefeed_ui.forms.inc');
+
+define('CULTUREFEED_UI_PAGE_USERS_SEARCH_COUNT', 20);
+define('CULTUREFEED_UI_PAGE_USERS_MOST_ACTIVE_COUNT', 10);
+define('CULTUREFEED_UI_PAGE_USERS_FOR_CONTENT_ACTIVITY', 20);
+
+/**
+ * Implements hook_menu().
+ */
+function culturefeed_ui_menu() {
+  $items['admin/config/culturefeed/culturefeed_ui'] = array(
+    'title' => 'CultureFeed User Interface',
+    'description' => 'Change CultureFeed User Interface settings.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('culturefeed_ui_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'culturefeed_ui.admin.inc',
+  );
+  $items['culturefeed/profile/edit'] = array(
+    'title callback' => 'culturefeed_ui_default_title_callback',
+    'title arguments' => array('Edit profile'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('culturefeed_ui_page_profile_edit_form'),
+    'access callback' => 'culturefeed_is_culturefeed_user',
+    'type' => MENU_CALLBACK,
+    'file' => 'culturefeed_ui.pages.inc',
+  );
+  $items['culturefeed/account/edit'] = array(
+    'title callback' => 'culturefeed_ui_default_title_callback',
+    'title arguments' => array('Edit account'),
+    'page callback' => 'culturefeed_ui_page_account_edit',
+    'access callback' => 'culturefeed_is_culturefeed_user',
+    'type' => MENU_CALLBACK,
+    'file' => 'culturefeed_ui.pages.inc',
+  );
+  $items['culturefeed/mboxverify/resend'] = array(
+    'title callback' => 'culturefeed_ui_default_title_callback',
+    'title arguments' => array('Resend email confirmation'),
+    'page callback' => 'culturefeed_ui_page_mboxverify_resend',
+    'access callback' => 'culturefeed_is_culturefeed_user',
+    'type' => MENU_CALLBACK,
+    'file' => 'culturefeed_ui.pages.inc',
+  );
+  $items['culturefeed/users/search'] = array(
+    'title callback' => 'culturefeed_ui_default_title_callback',
+    'title arguments' => array('Search users'),
+    'page callback' => 'culturefeed_ui_page_users_search',
+    'page arguments' => array(3),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'file' => 'culturefeed_ui.pages.inc',
+  );
+  $items['culturefeed/serviceconsumers'] = array(
+    'title callback' => 'culturefeed_ui_default_title_callback',
+    'title arguments' => array('Connected channels'),
+    'page callback' => 'culturefeed_ui_page_serviceconsumers',
+    'access callback' => 'culturefeed_is_culturefeed_user',
+    'type' => MENU_CALLBACK,
+    'file' => 'culturefeed_ui.pages.inc',
+  );
+  $items['culturefeed/serviceconsumers/revoke/%/%'] = array(
+    'title callback' => 'culturefeed_ui_default_title_callback',
+    'title arguments' => array('Remove UiTiD channel'),
+    'page callback' => 'culturefeed_ui_page_serviceconsumer_revoke',
+    'page arguments' => array(3, 4),
+    'access callback' => 'culturefeed_is_culturefeed_user',
+    'type' => MENU_CALLBACK,
+    'file' => 'culturefeed_ui.pages.inc',
+  );
+  $items['culturefeed/onlineaccounts/delete/%/%/%'] = array(
+    'title callback' => 'culturefeed_ui_default_title_callback',
+    'title arguments' => array('Remove social account'),
+    'page callback' => 'culturefeed_ui_page_online_account_delete',
+    'page arguments' => array(3, 4, 5),
+    'access callback' => 'culturefeed_is_culturefeed_user',
+    'type' => MENU_CALLBACK,
+    'file' => 'culturefeed_ui.pages.inc',
+  );
+  $items['culturefeed/onlineaccounts/privacy/%/%/%/%'] = array(
+    'title callback' => 'culturefeed_ui_default_title_callback',
+    'title arguments' => array('Configure privacy social account'),
+    'page callback' => 'culturefeed_ui_page_online_account_update_privacy',
+    'page arguments' => array(3, 4, 5, 6),
+    'access callback' => 'culturefeed_is_culturefeed_user',
+    'type' => MENU_CALLBACK,
+    'file' => 'culturefeed_ui.pages.inc',
+  );
+  $items['culturefeed/toggle/privacy/facebook/%/%/%'] = array(
+    'title callback' => 'culturefeed_ui_default_title_callback',
+    'title arguments' => array('Configure privacy social account'),
+    'page callback' => 'culturefeed_ui_page_online_account_toggle_facebook_privacy',
+    'page arguments' => array(3, 4, 5, 6),
+    'access callback' => 'culturefeed_is_culturefeed_user',
+    'type' => MENU_CALLBACK,
+    'file' => 'culturefeed_ui.pages.inc',
+  );
+  $items['culturefeed/users/mostactive'] = array(
+    'title callback' => 'culturefeed_ui_default_title_callback',
+    'title arguments' => array('Most active user'),
+    'page callback' => 'culturefeed_ui_page_users_most_active',
+    'page arguments' => array(3),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'file' => 'culturefeed_ui.pages.inc',
+  );
+  $items['culturefeed/removeaccount'] = array(
+    'title callback' => 'culturefeed_ui_default_title_callback',
+    'title arguments' => array('Delete account'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('culturefeed_ui_page_remove_account_form'),
+    'access callback' => 'culturefeed_is_culturefeed_user',
+    'type' => MENU_CALLBACK,
+    'file' => 'culturefeed_ui.pages.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function culturefeed_ui_menu_alter(&$items) {
+  $remove = array(
+    'user/%user/edit',
+  );
+
+  foreach ($remove as $path) {
+    $items[$path]['access callback'] = FALSE;
+    unset($items[$path]['access arguments']);
+  }
+
+}
+
+/**
+ * Implements hook_init().
+ */
+function culturefeed_ui_init() {
+  culturefeed_ui_set_canonical_and_noindex();
+}
+
+function culturefeed_ui_default_title_callback($title = '') {
+  return $title;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function culturefeed_ui_theme() {
+  return array(
+    'culturefeed_ui_profile' => array(
+      'variables' => array('user' => NULL),
+      'template' => 'culturefeed-ui-profile',
+    ),
+    'culturefeed_ui_profile_box' => array(
+      'variables' => array(
+        'profile_name' => NULL,
+        'account' => NULL,
+        'main_items' => array(),
+        'dropdown_items' => array(),
+      ),
+      'template' => 'culturefeed-ui-profile-box',
+    ),
+    'culturefeed_ui_anonymous_profile_box' => array(
+      'variables' => array(),
+      'template' => 'culturefeed-ui-anonymous-profile-box',
+    ),
+    'culturefeed_ui_most_active_user' => array(
+      'variables' => array('account' => NULL, 'sort' => CultureFeed_SearchUsersQuery::SORT_NUMBEROFACTIVEACTIVITIES),
+      'template' => 'culturefeed-ui-most-active-user',
+    ),
+    'culturefeed_ui_connect' => array(
+      'variables' => array(),
+      'template' => 'culturefeed-ui-connect',
+    ),
+    'culturefeed_ui_mbox_confirmation_reminder' => array(
+      'variables' => array('account' => NULL),
+      'template' => 'culturefeed-ui-mbox-confirmation-reminder',
+    ),
+    'culturefeed_ui_user_summary' => array(
+      'variables' => array('user' => NULL, 'uid' => NULL),
+      'template' => 'culturefeed-ui-user-summary',
+    ),
+    'culturefeed_ui_ranked_user_summary' => array(
+      'variables' => array('user' => NULL, 'uid' => NULL),
+      'template' => 'culturefeed-ui-ranked-user-summary',
+    ),
+    'culturefeed_ui_profile_menu_item' => array(
+      'variables' => array('title' => '', 'url' => '', 'description' => ''),
+      'template' => 'culturefeed-ui-profile-menu-item',
+    ),
+    'culturefeed_ui_service_consumer_summary' => array(
+      'variables' => array('consumer' => NULL, 'revoke_link' => ''),
+      'template' => 'culturefeed-ui-service-consumer-summary',
+    ),
+    'culturefeed_ui_online_account' => array(
+      'variables' => array('account' => NULL, 'account_type' => NULL, 'publish_link' => '', 'delete_link' => '', 'connect_link' => ''),
+      'template' => 'culturefeed-ui-online-account',
+    ),
+    'culturefeed_ui_my_uitid' => array(
+      'variables' => array('account' => NULL, 'like' => NULL, 'goto' => NULL),
+      'template' => 'culturefeed-ui-my-uitid',
+    ),
+    'culturefeed_ui_something_for_you' => array(
+      'variables' => array(),
+      'template' => 'culturefeed-ui-something-for-you',
+    ),
+    'culturefeed_ui_connect_hover' => array(
+      'variables' => array('url' => ''),
+      'template' => 'culturefeed-ui-connect-hover',
+    ),
+    'culturefeed_ui_my_uitid' => array(
+      'variables' => array('account' => NULL, 'like' => NULL, 'goto' => NULL),
+      'template' => 'culturefeed-ui-my-uitid',
+    ),
+    'culturefeed_ui_page_account_edit' => array(
+      'variables' => array(),
+      'template' => 'culturefeed-ui-page-account-edit',
+    ),
+  );
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function culturefeed_ui_block_info() {
+  $block['connect']['info'] = t('Culturefeed ui: teaser (formerly connect)');
+  $block['connect']['cache'] = DRUPAL_NO_CACHE;
+
+  $block['most_active_user']['info'] = t('Culturefeed ui: most active user');
+  $block['most_active_user']['cache'] = DRUPAL_CACHE_GLOBAL;
+
+  $block['profile_box']['info'] = t('Culturefeed ui: login (formerly profile box)');
+  $block['profile_box']['cache'] = DRUPAL_NO_CACHE;
+
+  $block['profile_menu']['info'] = t('Culturefeed ui: profile menu');
+  $block['profile_menu']['cache'] = DRUPAL_NO_CACHE;
+
+  $block['mbox_confirmation_reminder']['info'] = t('Culturefeed ui: e-mail confirmation reminder');
+  $block['mbox_confirmation_reminder']['cache'] = DRUPAL_NO_CACHE;
+
+  $block['search_users']['info'] = t('Culturefeed ui: search users');
+  $block['search_users']['cache'] = DRUPAL_NO_CACHE;
+
+  $block['similar_users']['info'] = t('Culturefeed ui: similar users');
+  $block['similar_users']['cache'] = DRUPAL_CACHE_CUSTOM;
+
+  $block['my_uitid']['info'] = t('Culturefeed ui: profile summary (formerly My UiTiD)');
+  $block['my_uitid']['cache'] = DRUPAL_NO_CACHE;
+
+  $block['something_for_you']['info'] = t('Culturefeed ui: something for you?');
+  $block['something_for_you']['cache'] = DRUPAL_CACHE_PER_PAGE;
+
+  return $block;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function culturefeed_ui_block_view($delta = '') {
+  module_load_include('inc', 'culturefeed_ui', 'culturefeed_ui.blocks');
+
+  if (function_exists('culturefeed_ui_block_' . $delta . '_is_visible')) {
+    if (!call_user_func('culturefeed_ui_block_' . $delta . '_is_visible')) {
+      return FALSE;
+    }
+  }
+
+  if (function_exists('culturefeed_ui_block_' . $delta . '_cache_id') && $_SERVER['REQUEST_METHOD'] == 'GET' || $_SERVER['REQUEST_METHOD'] == 'HEAD') {
+    $cid = culturefeed_ui_block_get_cache_id($delta);
+
+    if ($cache = cache_get($cid, 'cache_block')) {
+      return $cache->data;
+    }
+
+    if (function_exists('culturefeed_ui_block_' . $delta . '_view')) {
+      $block = call_user_func('culturefeed_ui_block_' . $delta . '_view');
+
+      $cache_expires = CACHE_TEMPORARY;
+
+      if (function_exists('culturefeed_ui_block_' . $delta . '_cache_expires')) {
+        $cache_expires = call_user_func('culturefeed_ui_block_' . $delta . '_cache_expires');
+      }
+
+      cache_set($cid, $block, 'cache_block', $cache_expires);
+
+      return $block;
+    }
+  }
+  else {
+    if (function_exists('culturefeed_ui_block_' . $delta . '_view')) {
+      return call_user_func('culturefeed_ui_block_' . $delta . '_view');
+    }
+  }
+}
+
+function culturefeed_ui_block_get_cache_id($delta) {
+  global $theme, $base_root, $user;
+
+  // User 1 being out of the regular 'roles define permissions' schema,
+  // it brings too many chances of having unwanted output get in the cache
+  // and later be served to other users. We therefore exclude user 1 from
+  // block caching.
+  if (variable_get('block_cache', FALSE) && $user->uid != 1) {
+    // Start with common sub-patterns: block identification, theme, language.
+    $cid_parts[] = 'culturefeed_ui';
+    $cid_parts[] = $delta;
+    $cid_parts[] = $theme;
+    // If Locale is enabled but we have only one language we do not need it as cid
+    // part.
+    if (drupal_multilingual()) {
+      foreach (language_types_configurable() as $language_type) {
+        $cid_parts[] = $GLOBALS[$language_type]->language;
+      }
+    }
+
+    $cid_parts = array_merge($cid_parts, call_user_func('culturefeed_ui_block_' . $delta . '_cache_id'));
+
+    return implode(':', $cid_parts);
+  }
+}
+
+/**
+ * Implements hook_block_configure().
+ */
+function culturefeed_ui_block_configure($delta = '') {
+  module_load_include('inc', 'culturefeed_ui', 'culturefeed_ui.blocks');
+
+  if (function_exists('culturefeed_ui_block_' . $delta . '_configure')) {
+    return call_user_func('culturefeed_ui_block_' . $delta . '_configure');
+  }
+}
+
+/**
+ * Implements hook_block_save().
+ */
+function culturefeed_ui_block_save($delta = '', $edit = array()) {
+  module_load_include('inc', 'culturefeed_ui', 'culturefeed_ui.blocks');
+
+  if (function_exists('culturefeed_ui_block_' . $delta . '_save')) {
+    return call_user_func('culturefeed_ui_block_' . $delta . '_save', $edit);
+  }
+}
+
+/**
+ * Implements hook_user_login().
+ */
+function culturefeed_ui_user_login() {
+
+  // Update dob if given during login.
+  if (isset($_GET['dob'])) {
+
+    try {
+
+      $cf_account = new CultureFeed_User();
+      $cf_account->id = DrupalCultureFeed::getLoggedInUserId();
+      $cf_account->dob = $_GET['dob'];
+      DrupalCultureFeed::updateUser($cf_account);
+
+    }
+    catch (Exception $e) {
+      watchdog_exception('culturefeed_ui', $e);
+    }
+
+  }
+
+}
+
+/**
+ * Implements hook_user_view().
+ */
+function culturefeed_ui_user_view($account) {
+
+  if (!DrupalCultureFeed::isCultureFeedUser($account->uid)) {
+    return;
+  }
+
+  try {
+    $cf_account = DrupalCultureFeed::getUser($account->culturefeed_uid);
+  }
+  catch (Exception $e) {
+    watchdog_exception('culturefeed_ui', $e);
+    return;
+  }
+
+  $account->content['culturefeed'] = array(
+    '#theme' => 'culturefeed_ui_profile',
+    '#user' => $cf_account,
+  );
+}
+
+/**
+ * Implements hook_user_view_alter().
+ */
+function culturefeed_ui_user_view_alter(&$build) {
+  unset($build['summary']);
+}
+
+/**
+ * Implements hook_culturefeed_ui_profile_menu().
+ */
+function culturefeed_ui_culturefeed_ui_profile_menu() {
+
+  global $user;
+
+  return array(
+    'uitid' => array(
+      'title' => t('My account'),
+      'url' => 'user/' . $user->uid,
+      'description' => t('How other users will see your account'),
+      'weight' => -20,
+    ),
+    'profile' => array(
+      'title' => t('Edit profile'),
+      'url' => 'culturefeed/profile/edit',
+      'description' => t('Change name, address, profile picture, …'),
+      'weight' => -19,
+    ),
+    'account' => array(
+      'title' => t('Edit account'),
+      'url' => 'culturefeed/account/edit',
+      'description' => t('Change password, email address, connected channels, …'),
+      'weight' => -18,
+    ),
+  );
+
+}
+
+/**
+ * Implements hook_culturefeed_ui_profile_box_dropdown_items().
+ */
+function culturefeed_ui_culturefeed_ui_profile_box_dropdown_items($cf_account) {
+
+  $items = array();
+
+  $items['my-profile'] = array(
+    'data' => t('My profile'),
+    'class' => 'my-profile',
+    'children' => array(
+      array('data' => l($cf_account->nick, 'user/' . culturefeed_get_uid_for_cf_uid($cf_account->id, $cf_account->nick))),
+    ),
+    'weight' => -20,
+  );
+
+  $items['settings'] = array(
+    'data' => l(t('Edit profile'), 'culturefeed/profile/edit'),
+    'class' => 'settings',
+    'weight' => 19,
+  );
+
+  $items['logout'] = array(
+    'data' => l(t('Logout'), 'user/logout'),
+    'class' => 'logout',
+    'weight' => 21,
+  );
+
+  return $items;
+
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function culturefeed_ui_form_system_performance_settings_alter(&$form, $form_state) {
+  // We want our stuff before the clear cache fieldset and button.
+  $form['buttons']['#weight'] = 3;
+  $form['clear_cache']['#weight'] = 2;
+
+  // Adding API cache settings to the performance settings form.
+
+  $form['culturefeed_ui_cache'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('CultuurNet User Interface cache'),
+    '#weight' => 1,
+    '#description' => t('Enabling the CultuurNet User Interface cache will cache all parsed results of requests to the enrichments API. This will reduce the number of requests made directly to the API service.'),
+  );
+
+  $period = array(0 => '<' . t('none') . '>') + drupal_map_assoc(array(0, 60, 180, 300, 600, 900, 1800, 2700, 3600, 10800, 21600, 32400, 43200, 86400, 86400 * 2, 86400 * 5, 86400 * 7, 86400 * 14, 86400 * 28), 'format_interval');
+
+  $form['culturefeed_ui_cache']['culturefeed_ui_similar_users_block_cache_expires'] = array(
+    '#type' => 'select',
+    '#title' => t('Minimum cache lifetime for the similar users block'),
+    '#default_value' => variable_get('culturefeed_ui_similar_users_block_cache_expires', 3600),
+    '#options' => $period,
+    '#description' => t('The minimum cache lifetime is the minimum amount of time that will elapse before the cache is emptied and recreated'),
+  );
+}

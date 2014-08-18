@@ -1,0 +1,598 @@
+<?php
+/**
+ * @file
+ * Module file for all functionality for CultureFeed Search.
+ */
+
+module_load_include('inc', 'culturefeed_search_ui', 'includes/helpers');
+
+/**
+ * Constants to define the available pager types.
+ */
+define("CULTUREFEED_SEARCH_UI_PAGER_NORMAL", 0);
+define("CULTUREFEED_SEARCH_UI_PAGER_INFINITE_SCROLL", 1);
+
+define("CULTUREFEED_SEARCH_UI_PAGER_ITEMS_PER_PAGE", 10);
+
+define('CULTUREFEED_SEARCH_SORT_ALPHABETICALLY', 'alphabetically');
+define('CULTUREFEED_SEARCH_SORT_TOTAL_RESULTS', 'total_results');
+
+/**
+ * Implements hook_init().
+ */
+function culturefeed_search_ui_init() {
+
+  // Redirect to correct slug version, if an old slug was used.
+  if ($item = culturefeed_search_get_active_object()) {
+
+    $path = current_path();
+    if ($item instanceof CultureFeed_Cdb_Item_Page) {
+      $path = culturefeed_search_detail_path('page', $item->getId(), $item->getName());
+    }
+    elseif ($item->getType() == 'event' || $item->getType() == 'production' || $item->getType() == 'actor') {
+      $path = culturefeed_search_detail_path($item->getType(), $item->getId(), $item->getTitle(culturefeed_search_get_preferred_language()));
+    }
+
+    if (strpos(current_path(), $path) !== 0) {
+      $params = drupal_get_query_parameters();
+      drupal_goto($path, array('query' => ($params ? array($params) : NULL)), 301);
+    }
+
+  }
+
+  // Redirect old cnapi urls.
+  if (variable_get('culturefeed_search_redirect_old_search', FALSE)) {
+    culturefeed_search_ui_redirect_cnapi_urls();
+  }
+
+  // Set correct robot metatag.
+  $active_page = _culturefeed_search_ui_get_active_search_page();
+  if ($active_page) {
+    culturefeed_search_ui_set_noindex_metatag();
+  }
+
+}
+
+/**
+ * Implements hook_menu().
+ */
+function culturefeed_search_ui_menu() {
+
+  $items = array();
+
+  // Dummy page callback used to redirect the user to the real search page.
+  $items['culturefeed/search'] = array(
+    'title' => 'Culturefeed search',
+    'title callback' => FALSE,
+    'page callback' => 'culturefeed_search_ui_search_page',
+    'page arguments' => array('submitted'),
+    'file' => 'includes/pages.inc',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+
+  foreach (culturefeed_get_searchable_types() as $name => $search_type) {
+
+    $class_name = isset($search_type['class_name']) ? $search_type['class_name'] : 'CultureFeedSearchPage';
+
+    // Menu paths for search.
+    $items[$search_type['path']] = array(
+      'title' => $search_type['page_title'],
+      'title callback' => FALSE,
+      'page callback' => 'culturefeed_search_ui_search_page',
+      'page arguments' => array($name, $class_name),
+      'file' => 'includes/pages.inc',
+      'access arguments' => array('access content'),
+      'type' => MENU_CALLBACK,
+    );
+    $arguments = explode('/', $search_type['path']);
+    $items[$search_type['path'] . '/%'] = array(
+      'title' => $search_type['page_title'],
+      'title callback' => FALSE,
+      'page callback' => 'culturefeed_search_ui_search_page',
+      'page arguments' => array($name, $class_name, count($arguments)),
+      'file' => 'includes/pages.inc',
+      'access arguments' => array('access content'),
+      'type' => MENU_CALLBACK,
+    );
+
+  }
+
+  $items['admin/config/culturefeed/search-ui'] = array(
+    'title' => 'CultureFeed Search UI',
+    'description' => t('Change CultureFeed Search UI settings like display, filters, …'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('culturefeed_search_ui_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'includes/admin.inc',
+  );
+
+  return $items;
+
+}
+
+/**
+ * Implements hook_theme().
+ */
+function culturefeed_search_ui_theme() {
+
+  $path = drupal_get_path('module', 'culturefeed_search_ui') . '/theme';
+
+  return array(
+
+    'culturefeed_search_page' => array(
+      'variables' => array(
+        'searchresult' => NULL
+      ),
+      'template' => 'culturefeed-search-page',
+      'path' => $path,
+      'file' => 'theme.inc',
+    ),
+    'culturefeed_search_list' => array(
+      'variables' => array(
+        'items' => NULL,
+        'nowrapper' => FALSE,
+      ),
+      'template' => 'culturefeed-search-list',
+      'path' => $path,
+      'file' => 'theme.inc',
+    ),
+    'culturefeed_search_facet' => array(
+      'variables' => array(
+        'facet' => NULL,
+        'items' => array(),
+        'title' => NULL,
+        'path' => NULL,
+        'query' => NULL,
+        'sort' => '',
+      ),
+      'template' => 'culturefeed-search-facet',
+      'path' => $path,
+      'file' => 'theme.inc',
+    ),
+    'culturefeed_search_facet_eventtype' => array(
+      'variables' => array(
+        'facet' => NULL,
+        'items' => array(),
+        'title' => NULL,
+        'path' => NULL,
+        'query' => NULL,
+        'sort' => '',
+      ),
+      'template' => 'culturefeed-search-facet-eventtype',
+      'path' => $path,
+      'file' => 'theme.inc',
+    ),
+    'culturefeed_search_facet_item' => array(
+      'variables' => array(
+        'facet_item' => NULL,
+        'facet' => NULL,
+        'path' => NULL,
+        'query' => NULL,
+        'active' => FALSE,
+      ),
+      'template' => 'culturefeed-search-facet-item',
+      'path' => $path,
+      'file' => 'theme.inc',
+    ),
+    'culturefeed_search_active_filters_item' => array(
+      'variables' => array(
+        'label' => NULL,
+        'url' => NULL,
+      ),
+      'template' => 'culturefeed-search-active-filters-item',
+      'path' => $path,
+    ),
+    'culturefeed_search_pager_summary' => array(
+      'variables' => array(
+        'result' => NULL,
+        'start' => 0,
+      ),
+      'path' => $path,
+      'file' => 'theme.inc',
+    ),
+
+    'culturefeed_search_suggestions' => array(
+      'variables' => array(
+        'suggestions' => array(),
+      ),
+      'template' => 'culturefeed-search-suggestions',
+      'path' => $path,
+      'file' => 'theme.inc',
+    ),
+    'culturefeed_search_ui_admin_filter_form_options' => array(
+      'render element' => 'element',
+      'path' => $path,
+      'file' => 'theme.inc',
+    ),
+  );
+
+}
+
+/**
+ * Implements hook_library().
+ */
+function culturefeed_search_ui_library() {
+
+  $path = drupal_get_path('module', 'culturefeed_search_ui');
+
+  // Date range picker
+  $libraries['ui.daterangepicker'] = array(
+    'title' => 'Datejs',
+    'website' => 'http://filamentgroup.com/lab/date_range_picker_using_jquery_ui_16_and_jquery_ui_css_framework/',
+    'version' => '1',
+    'js' => array(
+      $path . '/js/daterangepicker.jQuery.compressed.js' => array(),
+    ),
+    'css' => array(
+      $path . '/css/ui.daterangepicker.css' => array(),
+    ),
+    'dependencies' => array(
+      array('system', 'ui.datepicker'),
+    ),
+  );
+
+  return $libraries;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function culturefeed_search_ui_block_info() {
+  $blocks = array();
+
+  $blocks['culturefeed-search-box'] = array(
+    'info' => t('Culturefeed search: search events and pages'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  $blocks['culturefeed-search-sortorder'] = array(
+    'info' => t('Culturefeed search: sort order'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  $blocks['culturefeed-search-activefilters'] = array(
+    'info' => t('Culturefeed search: active filters'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  $blocks['facet-datetype'] = array(
+    'info' => t('Culturefeed search: facet when'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  $blocks['facet-city'] = array(
+    'info' => t('Culturefeed search: facet where'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  $blocks['facet-city-only'] = array(
+    'info' => t('Culturefeed search: facet where - search only on cities and zipcodes'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  $blocks['filter-form'] = array(
+    'info' => t('Culturefeed search: Filter form'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  // Facet blocks.
+  $domains = db_query('SELECT did, label FROM {culturefeed_search_domains}');
+  foreach ($domains as $domain) {
+    $blocks['facet-' . $domain->did] = array(
+      'info' => t('Culturefeed search: facet @label', array('@label' => $domain->label)),
+      'cache' => DRUPAL_NO_CACHE,
+    );
+  }
+
+  return $blocks;
+
+}
+
+/**
+ * Implements hook_block_configure().
+ */
+function culturefeed_search_ui_block_configure($delta) {
+
+  $form = array();
+
+  $delta_parts = explode('-', $delta);
+  if ($delta != 'facet-datetype' && isset($delta_parts[0]) && $delta_parts[0] == 'facet') {
+    $form['sort'] = array(
+      '#type' => 'select',
+      '#title' => t('Sort facet on'),
+      '#options' => array(
+        '' => t('Default sorting'),
+        CULTUREFEED_SEARCH_SORT_ALPHABETICALLY => t('Alphabetically'),
+        CULTUREFEED_SEARCH_SORT_TOTAL_RESULTS => t('Total results')
+      ),
+      '#default_value' => variable_get('culturefeed_search_sort_' . $delta, CULTUREFEED_SEARCH_SORT_ALPHABETICALLY),
+    );
+
+    if ($delta == 'facet-theme') {
+      $form['culturefeed-facet-theme-hide'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Show the facet only when an eventtype is chosen'),
+        '#default_value' => variable_get('culturefeed_facet_theme_hide', FALSE),
+      );
+    }
+  }
+  elseif ($delta == 'filter-form') {
+
+    $options = variable_get('culturefeed_search_filter_options', culturefeed_search_ui_default_filter_options());
+    $form['culturefeed-search-filter-options'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Possible filters'),
+      '#theme' => 'culturefeed_search_ui_admin_filter_form_options',
+      '#description' => t('<p>Define the different filter options you want.<br />Example:<ul><li>Human name: No courses and workshops</li><li>Query string: no-courses-workshops</li><li>Filter query for API: !category_id:0.3.1.0.0</li></p>'),
+      '#tree' => TRUE,
+    );
+
+    for ($i = 0; $i < 10; $i++) {
+
+      $form['culturefeed-search-filter-options'][$i]['title'] = array(
+        '#title' => t('Human name'),
+        '#type' => 'textfield',
+        '#default_value' => isset($options[$i]['title']) ? $options[$i]['title'] : ''
+      );
+
+      $form['culturefeed-search-filter-options'][$i]['query-string'] = array(
+        '#title' => t('Querystring for url'),
+        '#type' => 'textfield',
+        '#default_value' => isset($options[$i]['query-string']) ? $options[$i]['query-string'] : ''
+      );
+
+      $form['culturefeed-search-filter-options'][$i]['api-filter-query'] = array(
+        '#title' => t('Filterquery for API'),
+        '#type' => 'textfield',
+        '#default_value' => isset($options[$i]['api-filter-query']) ? $options[$i]['api-filter-query'] : ''
+      );
+    }
+  }
+
+  return $form;
+}
+
+/**
+ * Implements hook_block_save().
+ */
+function culturefeed_search_ui_block_save($delta, $edit = array()) {
+
+  if (isset($edit['sort'])) {
+    variable_set('culturefeed_search_sort_' . $delta, $edit['sort']);
+  }
+  if (isset($edit['culturefeed-facet-theme-hide'])) {
+    variable_set('culturefeed_facet_theme_hide', $edit['culturefeed-facet-theme-hide']);
+  }
+  if (isset($edit['culturefeed-search-filter-options'])) {
+
+    $options = array();
+    foreach ($edit['culturefeed-search-filter-options'] as $option) {
+      if (!empty($option['title']) && !empty($option['query-string']) && !empty($option['api-filter-query'])) {
+        $options[] = $option;
+      }
+    }
+
+    variable_set('culturefeed_search_filter_options', $options);
+  }
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function culturefeed_search_ui_block_view($delta) {
+
+  module_load_include('inc', 'culturefeed_search_ui', 'includes/blocks');
+  $block = array();
+
+  switch ($delta) {
+
+    case 'culturefeed-search-box':
+      $block['content'] = drupal_get_form('culturefeed_search_ui_search_block_form');
+      break;
+
+    case 'culturefeed-search-sortorder':
+
+      $search_result = culturefeed_get_search_result();
+      if (!$search_result instanceof \Cultuurnet\Search\SearchResult || $search_result->getTotalCount() == 0) {
+        return;
+      }
+
+      $block['content'] = drupal_get_form('culturefeed_search_ui_search_sortorder_form');
+
+    break;
+
+    case 'culturefeed-search-activefilters':
+      $block['subject'] = t('You searched for:');
+      $block['content'] = culturefeed_search_ui_search_active_filters_block();
+    break;
+
+    case 'facet-datetype':
+      $block = culturefeed_search_ui_block_date_facet();
+    break;
+
+    case 'facet-city':
+      $block = culturefeed_search_ui_block_city_facet();
+    break;
+
+    case 'facet-city-only':
+      $block = culturefeed_search_ui_block_city_only_facet();
+    break;
+
+    case 'filter-form':
+
+      $search_result = culturefeed_get_search_result();
+      if (!$search_result instanceof \Cultuurnet\Search\SearchResult || $search_result->getTotalCount() == 0) {
+        return;
+      }
+
+      $active_filters = variable_get('culturefeed_search_form_active_filters', array());
+      $filter_options = variable_get('culturefeed_search_filter_options', array());
+      if (!empty($filter_options)) {
+        $block['content'] = drupal_get_form('culturefeed_search_ui_block_filter_form');
+      }
+
+      break;
+
+    default:
+
+      $delta_parts = explode('-', $delta);
+      if (isset($delta_parts[0]) && $delta_parts[0] == 'facet') {
+
+        // Hide theme facet if no eventtype is chosen.
+        if ($delta == 'facet-theme' && variable_get('culturefeed_facet_theme_hide', FALSE)) {
+          if (!isset($_GET['facet']['category_eventtype_id'])) {
+            return $block;
+          }
+        }
+
+        $sort = variable_get('culturefeed_search_sort_' . $delta, CULTUREFEED_SEARCH_SORT_ALPHABETICALLY);
+        $block = culturefeed_search_ui_search_facets_block('category_' . $delta_parts[1] . '_id', $delta_parts[1], array(), $sort);
+      }
+
+  }
+
+  return $block;
+
+}
+
+/**
+ * Implements hook_culturefeed_search_page_query_alter().
+ */
+function culturefeed_search_ui_culturefeed_search_page_query_alter(CultureFeedSearchPageInterface $culturefeedSearchPage) {
+
+  $filter_options = variable_get('culturefeed_search_filter_options', culturefeed_search_ui_default_filter_options());
+  foreach ($filter_options as $option) {
+    if (!empty($_GET[$option['query-string']])) {
+      $culturefeedSearchPage->addParameter(new \CultuurNet\Search\Parameter\FilterQuery($option['api-filter-query']));
+    }
+  }
+}
+
+/**
+ * Implements hook_culturefeed_search_ui_active_filters().
+ */
+function culturefeed_search_ui_culturefeed_search_ui_active_filters($culturefeedFacetingComponent) {
+
+  static $build = NULL;
+  if ($build !== NULL) {
+    return $build;
+  }
+
+  $query = drupal_get_query_parameters(NULL, array('q', 'page'));
+  $path = current_path();
+  $build = array();
+
+  // Check the current search term.
+  if (!empty($query['search'])) {
+    $search_query = $query;
+    unset($search_query['search']);
+    $url = url($path, array('query' => $search_query));
+    $build['item_search'] =  array(
+      '#theme' => 'culturefeed_search_active_filters_item',
+      '#label' => $query['search'],
+      '#url' => $url
+    );
+  }
+
+  // Check the facets.
+  if (!empty($query['facet'])) {
+
+    // Load all possible human names for special facets.
+    $human_names = array();
+    if (!empty($query['facet']['datetype'])) {
+      $human_names['datetype'] = culturefeed_search_ui_get_date_facet_options();
+    }
+    if (!empty($query['facet']['agefrom'])) {
+      $human_names['agefrom'] = culturefeed_search_ui_get_agefrom_facet_options();
+    }
+
+    $facets = $culturefeedFacetingComponent->getFacets();
+    // Loop through all active facets, and generate a remove link.
+    foreach ($query['facet'] as $active_facet_name => $selected_value) {
+      foreach ($selected_value as $key => $value) {
+        if (!empty($value)) {
+          $search_query = $query;
+          unset($search_query['facet'][$active_facet_name][$key]);
+
+          // If this was the only facet. Also remove the global facet key.
+          if (empty($search_query['facet'])) {
+            unset($search_query['facet']);
+          }
+
+          $url = url($path, array('query' => $search_query));
+
+          // Get translated label from terms.
+          $label = culturefeed_search_get_term_translation($selected_value[$key]);
+
+          $build['item_' . $active_facet_name][$value] = array(
+            '#theme' => 'culturefeed_search_active_filters_item',
+            '#label' => isset($human_names[$active_facet_name][$label]) ? $human_names[$active_facet_name][$label] : $label,
+            '#url' => $url
+          );
+        }
+      }
+    }
+  }
+
+  // Check if user is filtering on date range.
+  if (!empty($query['date_range'])) {
+    $search_query = $query;
+    unset($search_query['date_range']);
+    $url = url($path, array('query' => $search_query));
+    $build['date_search'] =  array(
+      '#theme' => 'culturefeed_search_active_filters_item',
+      '#label' => $query['date_range'],
+      '#url' => $url
+    );
+  }
+
+  // Check if user selected 'nearby activities'
+  if (!empty($query['nearby']) && !empty($query['coordinates'])) {
+    $search_query = $query;
+    unset($search_query['nearby']);
+    unset($search_query['coordinates']);
+    $url = url($path, array('query' => $search_query));
+    $build['nearby'] =  array(
+      '#theme' => 'culturefeed_search_active_filters_item',
+      '#label' => t('Near') . ' ' . check_plain($query['nearby']),
+      '#url' => $url
+    );
+  }
+
+  // Check if user is searching on a location.
+  if (!empty($query['location'])) {
+    $search_query = $query;
+    unset($search_query['location']);
+    $url = url($path, array('query' => $search_query));
+
+    $label = check_plain($query['location']);
+    if (!empty($query['distance'])) {
+      $label .= ' + ' . check_plain($query['distance']) . ' km';
+      unset($search_query['distance']);
+    }
+
+    $build['location'] =  array(
+      '#theme' => 'culturefeed_search_active_filters_item',
+      '#label' => $label,
+      '#url' => $url
+    );
+  }
+
+  // Check if form filters are selected.
+  $filter_options = variable_get('culturefeed_search_filter_options', culturefeed_search_ui_default_filter_options());
+  foreach ($filter_options as $option) {
+    if (!empty($query[$option['query-string']])) {
+      $search_query = $query;
+      unset($search_query[$option['query-string']]);
+      $url = url($path, array('query' => $search_query));
+      $build['free-only'] = array(
+        '#theme' => 'culturefeed_search_active_filters_item',
+        '#label' => t($option['title']),
+        '#url' => $url
+      );
+    }
+  }
+
+  return $build;
+}

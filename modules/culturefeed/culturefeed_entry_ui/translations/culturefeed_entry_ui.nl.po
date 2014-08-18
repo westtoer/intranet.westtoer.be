@@ -1,0 +1,657 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: POEditor.com\n"
+"Project-Id-Version: CFK - translations\n"
+"Language: nl\n"
+
+#: 
+msgid "Manage object tags"
+msgstr "Beheer object tags"
+
+#: 
+msgid "Manage all the tags from the objects on culturefeed (events, actors, ...)."
+msgstr "Beheer alle tags van objecten op culture feed (activiteiten, actoren ...)."
+
+#: 
+msgid "Manage custom tags"
+msgstr "Manage custom tags"
+
+#: 
+msgid "Manage custom tags from the objects on culturefeed (events, actors, ...) managed on the admin section."
+msgstr ""
+
+#: 
+msgid "Create events"
+msgstr "Events aanmaken"
+
+#: 
+msgid "Create new events through the entity api."
+msgstr "Maak activiteiten aan via Entry API"
+
+#: 
+msgid "Edit events"
+msgstr "Events aanpassen"
+
+#: 
+msgid "Edit events through the entity api."
+msgstr "Pas activiteiten aan via Entry API"
+
+#: 
+msgid "Delete events"
+msgstr "Verwijder events"
+
+#: 
+msgid "Delete events through the entity api."
+msgstr "Verwijder activiteiten via Entry API"
+
+#: 
+msgid "Tags"
+msgstr "Labels"
+
+#: 
+msgid "Edit"
+msgstr "Bewerken"
+
+#: 
+msgid "View"
+msgstr "Weergeven"
+
+#: 
+msgid "ZIP Code"
+msgstr "Postcode"
+
+#: 
+msgid "New activity"
+msgstr "Maak nieuwe activiteit aan"
+
+#: 
+msgid "Edit activity"
+msgstr "Pas activiteit aan"
+
+#: 
+msgid "Delete activity"
+msgstr "Verwijder activiteit"
+
+#: 
+msgid "CultureFeed Entry UI"
+msgstr "CultureFeed Entry UI"
+
+#: 
+msgid "All configurations to entry api for this site"
+msgstr ""
+
+#: 
+msgid "Multilingual forms to post, update and delete events to UiTDatabank Entry API"
+msgstr "Meertalig invoerformulier om activiteiten aan te maken, aan te passen en verwijderen in UiTdatabank via Entry API"
+
+#: 
+msgid "CultureFeed"
+msgstr "CultureFeed"
+
+#: 
+msgid "Preferred language"
+msgstr "Voorkeur taal"
+
+#: 
+msgid "Use the preferred language of the UiTID user, with the Drupal UI language as fallback"
+msgstr "Gebruik de voorkeurstaal van de UiTiD gebruiker, met de Drupal UI taal als backup"
+
+#: 
+msgid "Custom tags"
+msgstr ""
+
+#: 
+msgid "Custom tags specific for this site. Use a new line for each tag."
+msgstr ""
+
+#: 
+msgid "mon"
+msgstr "ma"
+
+#: 
+msgid "tue"
+msgstr "di"
+
+#: 
+msgid "wed"
+msgstr "woe"
+
+#: 
+msgid "thu"
+msgstr "don"
+
+#: 
+msgid "fri"
+msgstr "vrij"
+
+#: 
+msgid "sat"
+msgstr "zat"
+
+#: 
+msgid "sun"
+msgstr "zon"
+
+#: 
+msgid "Basic info"
+msgstr "Basisgegevens"
+
+#: 
+msgid "Title"
+msgstr "Titel"
+
+#: 
+msgid "Concerts"
+msgstr "Concerten"
+
+#: 
+msgid "Dance"
+msgstr "Dansvoorstelling"
+
+#: 
+msgid "Film"
+msgstr "Film"
+
+#: 
+msgid "Theatre"
+msgstr "Theatervoorstelling"
+
+#: 
+msgid "Sport"
+msgstr "Sport"
+
+#: 
+msgid "Location"
+msgstr "Locatie"
+
+#: 
+msgid "Location not found, add location"
+msgstr "Locatie niet gevonden, voeg locatie toe"
+
+#: 
+msgid "Location Title"
+msgstr "Naam locatie"
+
+#: 
+msgid "Street"
+msgstr "Straat"
+
+#: 
+msgid "House Number"
+msgstr "Huisnummer"
+
+#: 
+msgid "City"
+msgstr "Stad of gemeente"
+
+#: 
+msgid "Country"
+msgstr "Land"
+
+#: 
+msgid "Dates"
+msgstr "Datums"
+
+#: 
+msgid "Permanent"
+msgstr "Permanent"
+
+#: 
+msgid "X"
+msgstr "X"
+
+#: 
+msgid "Start date"
+msgstr "Begindatum"
+
+#: 
+msgid "+ add end"
+msgstr "+ voeg einduur toe"
+
+#: 
+msgid "End date"
+msgstr "Einddatum"
+
+#: 
+msgid "+ remove end"
+msgstr "+ verwijder einduur"
+
+#: 
+msgid "+ add date"
+msgstr "+ voeg datum toe"
+
+#: 
+msgid "Open all day?"
+msgstr "Alle dagen open?"
+
+#: 
+msgid "Yes"
+msgstr "Ja"
+
+#: 
+msgid "No"
+msgstr "Nee"
+
+#: 
+msgid "Extra info"
+msgstr "Extra info"
+
+#: 
+msgid "Description"
+msgstr "Beschrijving"
+
+#: 
+msgid "Short description"
+msgstr "Korte omschrijving"
+
+#: 
+msgid "+ add long description"
+msgstr "+ voeg lange beschrijving toe"
+
+#: 
+msgid "Long description"
+msgstr "Lange beschrijving"
+
+#: 
+msgid "Add multiple tags seperated by a \";\""
+msgstr "Voeg meerdere trefwoorden toe, gescheiden met een \";\""
+
+#: 
+msgid "Links"
+msgstr "Links"
+
+#: 
+msgid "+ add another link"
+msgstr "+ voeg een link toe"
+
+#: 
+msgid "Image"
+msgstr "Afbeelding"
+
+#: 
+msgid "Image upload"
+msgstr "Afbeelding opladen"
+
+#: 
+msgid "Allowed extensions: gif png jpg jpeg"
+msgstr "Ondersteunde bestandsformaten: gif, png, jpg, jpeg"
+
+#: 
+msgid "I agree to the <a href=\"#\">general conditions of UiTdatabank</a> and I declare that I have the necessary rights or permissions to distribute the image through UiTdatabank."
+msgstr "Ik ga akkoord met de <a href=\"#\">algemene voorwaarden van UiTdatabank</a> en verklaar dat ik beschik over de nodige rechten om de afbeelding te verspreiden via UiTdatabank"
+
+#: 
+msgid "Price"
+msgstr "Prijs"
+
+#: 
+msgid "Free event"
+msgstr "Gratis activiteit"
+
+#: 
+msgid "+ add price info"
+msgstr "+ voeg prijsinformatie toe"
+
+#: 
+msgid "Extra price info"
+msgstr "Extra prijsinformatie"
+
+#: 
+msgid "Organisation"
+msgstr "Organisatie"
+
+#: 
+msgid "Organisation not found, add organisation"
+msgstr "Organisatie niet gevonden, voeg organisatie toe"
+
+#: 
+msgid "Name new organiser"
+msgstr "Naam nieuwe organisatie"
+
+#: 
+msgid "Age"
+msgstr "Leeftijd"
+
+#: 
+msgid "For everyone"
+msgstr "Voor iedereen"
+
+#: 
+msgid "For children (between 1 and 12 years)"
+msgstr "Voor kinderen (tussen 1 en 12 jaar)"
+
+#: 
+msgid "For youth (between 12 and 18 years)"
+msgstr "Voor jongeren (tussen 12 en 18 jaar)"
+
+#: 
+msgid "For adults (18+)"
+msgstr "Voor volwassenen (18+)"
+
+#: 
+msgid "Age from"
+msgstr "Vanaf"
+
+#: 
+msgid "Activities for children will get the 'Fly' label"
+msgstr "Activiteiten voor kinderen krijgen automatisch het 'Vlieg'-label"
+
+#: 
+msgid "Contacts"
+msgstr "Contacten"
+
+#: 
+msgid "+ add another contact"
+msgstr "+ voeg nog een contact toe"
+
+#: 
+msgid "Performers"
+msgstr "Uitvoerders"
+
+#: 
+msgid "+ add another performer"
+msgstr "+ voeg nog een uitvoerder toe"
+
+#: 
+msgid "Language"
+msgstr "Taal"
+
+#: 
+msgid "+ add more language info"
+msgstr "+ voeg meer taalinformatie toe"
+
+#: 
+msgid "Entrance"
+msgstr "Inkom"
+
+#: 
+msgid "Only for members"
+msgstr "Enkel voor leden"
+
+#: 
+msgid "Translations"
+msgstr "Vertalingen"
+
+#: 
+msgid "Dutch"
+msgstr "Nederlands"
+
+#: 
+msgid "English"
+msgstr "Engels"
+
+#: 
+msgid "French"
+msgstr "Frans"
+
+#: 
+msgid "German"
+msgstr "Duits"
+
+#: 
+msgid "Publication"
+msgstr "Gepubliceerd"
+
+#: 
+msgid "Publication date"
+msgstr "Publicatiedatum"
+
+#: 
+msgid "Save"
+msgstr "Opslaan"
+
+#: 
+msgid "Start time"
+msgstr "Starttijd"
+
+#: 
+msgid "End time"
+msgstr "Eindtijd"
+
+#: 
+msgid "Spoken"
+msgstr "Gesproken"
+
+#: 
+msgid "Dubbed"
+msgstr "Gedubd"
+
+#: 
+msgid "Subtitled"
+msgstr "Ondertiteld"
+
+#: 
+msgid "in"
+msgstr "in"
+
+#: 
+msgid "Contact"
+msgstr "Contact"
+
+#: 
+msgid "Input"
+msgstr "Invoer"
+
+#: 
+msgid "Performer"
+msgstr "Uitvoerder"
+
+#: 
+msgid "Role"
+msgstr "Rol"
+
+#: 
+msgid "Link"
+msgstr "Link"
+
+#: 
+msgid "for reservation"
+msgstr "voor reservatie"
+
+#: 
+msgid "Format"
+msgstr "Formaat"
+
+#: 
+msgid "Please fill in correct age"
+msgstr "Geef de juiste leeftijd op"
+
+#: 
+msgid "Please fill in correct date and time"
+msgstr "Geef de juiste datum en tijdstip op"
+
+#: 
+msgid "A date is required."
+msgstr "Een datum is verplicht."
+
+#: 
+msgid "Date field is invalid. The end date is earlier than the beginning date."
+msgstr "Ingevoerde datum niet correct: einddatum valt voor de begindatum"
+
+#: 
+msgid "Date field is invalid. The end time is earlier than the beginning time."
+msgstr "Ingevoerde datum niet correct: einduur valt voor beginuur"
+
+#: 
+msgid "Please fill in correct date"
+msgstr "Voer correcte datum in"
+
+#: 
+msgid "Please agree to the general conditions of UiTdatabank and declare that you have the necessary rights or permissions to distribute the image through UiTdatabank."
+msgstr "Geef aan dat je akkoord gaat met de algemene voorwaarden van UiTdatabank en dat je over de nodige rechten of toestemmingen beschikt om de afbeelding te verspreiden via UiTdatabank."
+
+#: 
+msgid "A category is required."
+msgstr "Een categorie is verplicht"
+
+#: 
+msgid "A title is required for a custom location"
+msgstr "Een titel is verplicht voor een nieuwe locatie"
+
+#: 
+msgid "A zip code is required for a custom location"
+msgstr "Een postcode is verplicht voor een nieuwe locatie"
+
+#: 
+msgid "A city is required for a custom location"
+msgstr "Een stad is verplicht voor een nieuwe locatie"
+
+#: 
+msgid "A location is required."
+msgstr "Een locatie is verplicht"
+
+#: 
+msgid "We could not validate the location"
+msgstr "We kunnen de locatie niet bevestigen"
+
+#: 
+msgid "Not a valid URL"
+msgstr "Geen geldige URL"
+
+#: 
+msgid "We could not validate the organization"
+msgstr "We kunnen de organisatie niet bevestigen"
+
+#: 
+msgid "Not a valid email address"
+msgstr "Geen geldig emailadres"
+
+#: 
+msgid "Order tickets"
+msgstr "Bestel tickets"
+
+#: 
+msgid "An error occurred while saving the event"
+msgstr "Er is een fout opgetreden tijdens het opslaan van de activiteit"
+
+#: 
+msgid "Event successfully updated"
+msgstr "Activiteit werd aangepast"
+
+#: 
+msgid "Click here to update"
+msgstr "Klik hier om aan te passen"
+
+#: 
+msgid "Are you sure you want to delete the event?"
+msgstr "Ben je zeker dat je de activiteit wil verwijderen?"
+
+#: 
+msgid "This action cannot be undone"
+msgstr "Deze actie kan niet ongedaan gemaakt worden"
+
+#: 
+msgid "Delete"
+msgstr "Verwijder"
+
+#: 
+msgid "Cancel"
+msgstr "Annuleren"
+
+#: 
+msgid "Event successfully deleted"
+msgstr "Activiteit werd verwijderd"
+
+#: 
+msgid "An error occurred while deleting the event"
+msgstr "Er is een fout opgetreden tijdens het verwijderen van de activiteit"
+
+#: 
+msgid "Seperate multiple tags by ;"
+msgstr "Scheid meerdere trefwoorden met ;"
+
+#: 
+msgid "Submit"
+msgstr "Voeg toe"
+
+#: 
+msgid "Tag @tag is not permitted because it's already a custom tag."
+msgstr "Trefwoord @tag is niet toegelaten aangezien het al een bestaande marker is."
+
+#: 
+msgid "Autocomplete popup"
+msgstr "Popup voor automatisch aanvullen"
+
+#: 
+msgid "open"
+msgstr "open"
+
+#: 
+msgid "from"
+msgstr "van"
+
+#: 
+msgid "to"
+msgstr "tot"
+
+#: 
+msgid "Operations"
+msgstr "Bewerkingen"
+
+#: 
+msgid "Links to operations that can be performed"
+msgstr "Link naar mogelijke handelingen"
+
+#: 
+msgid "Create event"
+msgstr "Maak activiteit aan"
+
+#: 
+msgid "Link to create event"
+msgstr "Link om activiteit aan te maken"
+
+#: 
+msgid "Master"
+msgstr ""
+
+#: 
+msgid "Events created by me"
+msgstr "Mijn activiteiten"
+
+#: 
+msgid "more"
+msgstr "meer"
+
+#: 
+msgid "Apply"
+msgstr "Pas toe"
+
+#: 
+msgid "Reset"
+msgstr "Opnieuw instellen"
+
+#: 
+msgid "Sort by"
+msgstr "Sorteer op"
+
+#: 
+msgid "Asc"
+msgstr "Stijgend"
+
+#: 
+msgid "Desc"
+msgstr "Dalend"
+
+#: 
+msgid "Notification that no results were found"
+msgstr "Melding dat er geen resultaten werden gevonden"
+
+#: 
+msgid "Unable to find any events created by you."
+msgstr "Er werden geen activiteiten gevonden die door jou aangemaakt werden"
+
+#: 
+msgid "Last updated"
+msgstr "Laatst bijgewerkt"
+
+#: 
+msgid "Block"
+msgstr "Blok"
+
+#: 
+msgid "Add event"
+msgstr "Voeg activiteit toe"
+
